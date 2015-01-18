@@ -2,7 +2,7 @@
 
 [Demo ver.1] - Full File API version.
 
-[Demo ver.2] - File API upload and canvas thumbnails.
+
 
 #Images processing
 ##Task description
@@ -30,4 +30,4 @@ JavaScript application that is able to perform all described operations.
 
 
 [Demo ver.1]:http://thigrand.pl/exp/index.html
-[Demo ver.2]:http://thigrand.pl/exp/index2.html
+
