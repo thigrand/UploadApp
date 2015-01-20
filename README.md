@@ -1,6 +1,7 @@
 # UploadApp
 
-[Demo ver.1] - Full File API version.
+[Demo ver.2] - File API with canvas.  (New)
+[Demo ver.1] - Full File API version. (Old)
 
 
 
@@ -25,9 +26,10 @@ JavaScript application that is able to perform all described operations.
 - Careful code structure
 - Commented code
 - No third-party code
-- Basic UI that allows to test the solutio
+- Basic UI that allows to test the solution
 
 
 
 [Demo ver.1]:http://thigrand.pl/exp/index.html
+[Demo ver.2]:http://thigrand.pl/exp/index2.html
 
