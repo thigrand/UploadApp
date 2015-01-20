@@ -16,10 +16,8 @@ var fileUp = (function() {
             filesHolder = evt.dataTransfer.files; // FileList object from dnd
         } else if (evt.type == 'change') {
             filesHolder = evt.target.files; // FileList object from input
-        } else {
-            return false;
         }
-        return filesHolder;
+        return filesHolder||false;
     }
 
 
@@ -40,8 +38,8 @@ var fileUp = (function() {
 
         canvasHref.value = img.src;
         canvasTarget.value = "_blank";
-        canvasUrl.setAttributeNode(canvasHref);
-        canvasUrl.setAttributeNode(canvasTarget);
+        canvasUrl.setAttribute(canvasHref);
+        canvasUrl.setAttribute(canvasTarget);
 
         canvasUrl.appendChild(canvas);
 
@@ -77,14 +75,6 @@ var fileUp = (function() {
         }
     }
 
-    dropZone.ondragover = function (e) {
-        e.preventDefault();
-
-        return false;
-    }
-    dropZone.ondrop = function(e) {
-        console.log("gdas");
-    }
 
     function handleDragOver(evt) {
         evt.stopPropagation();
