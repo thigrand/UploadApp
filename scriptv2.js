@@ -1,6 +1,5 @@
 var thumbnails = (function() {
-    return {
-        makeCanvas: function makeCanvas(img, width, height) {
+    function makeCanvas(img, width, height) {
             var canvas = document.createElement('canvas'),
                 canvasUrl = document.createElement('a'),
                 ctx = canvas.getContext('2d');
@@ -15,6 +14,9 @@ var thumbnails = (function() {
                 ctx.drawImage(img, 0, 0, width, height);
             };
             return canvasUrl;
+        }
+    return {
+        makeCanvas: makeCanvas
         }
     }
 })();
@@ -57,9 +59,9 @@ var fileUp = (function (filesElement, galleryElement) {
 })('#files', '#gallery');
 
 
-var draggAndDrop = (function(draggElement, galleryElement) {
+var dragAndDrop = (function(dragElement, galleryElement) {
     var conf = {
-        dropZone : document.querySelector(draggElement),
+        dropZone : document.querySelector(dragElement),
         gallery : document.querySelector(galleryElement)
     };
     
@@ -103,4 +105,4 @@ var draggAndDrop = (function(draggElement, galleryElement) {
     return {
 
     };
-})('#dragg', '#gallery');
+})('#drag', '#gallery');
