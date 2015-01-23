@@ -1,57 +1,114 @@
-function handleFileSelect(evt) {
-    console.log(evt);
-    evt.stopPropagation();
-    evt.preventDefault();
-  
-      
-    
-    var filesHolder; 
-    // Event recognition 
-    if(evt.type == 'drop') {
-      filesHolder = evt.dataTransfer.files; // FileList object 
-    } else if(evt.type == 'change') { 
-      filesHolder = evt.target.files; // FileList object 
-    } else { return false; 
-    }
 
-    // Loop through the FileList and render image files as thumbnails.
 
-    for (var i = 0, f; (f = filesHolder[i]); i++) {
+var handleFile = (function (galleryElement) {
+    var conf = {
+        gallery : document.querySelector(galleryElement),
+    };
 
-      // Only process image files.
-      if (!f.type.match('image.*')) {
-          continue;
+    function select(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        var filesHolder;
+        (evt.type == 'drop') ? (filesHolder = evt.dataTransfer.files) : (filesHolder = evt.target.files);
+
+        for (var i = 0, file;
+            (file = filesHolder[i]); i++) {
+            var reader = new FileReader();
+
+            // Only process image files.
+            if (file.type.match("image.*")) {
+
+                reader.onload = function() {
+                    var img = new Image();
+                    img.src = this.result;
+                    //thumbnails
+                    conf.gallery.appendChild(thumbnails.makeCanvas(img, 150, 150));
+                }
+
+                // Read in the image file as a data URL.
+                reader.readAsDataURL(file);
+            }
         }
-
-       var reader = new FileReader();
-
-        // Closure to capture the file information.
-      reader.onload = (function(theFile) {
-      
-          return function(e) {
-              // Render thumbnail.
-            var span = document.createElement('span');
-            span.innerHTML = ['<a href="',e.target.result ,'" onclick="this.target=\'_blank\'"><img class="thumb" src="', e.target.result,
-                              '" title="', escape(theFile.name), '"/></a>'].join('');
-              document.getElementById('thumbnails').insertBefore(span, null);
-        };
-        })(f);
-
-      // Read in the image file as a data URL.
-      reader.readAsDataURL(f);
     }
-  }
+        return {
+            select: select
+        };
 
-  function handleDragOver(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
-    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-  }
+})('#gallery');
 
-  // Setup the dnd listeners.
-  var dropZone = document.getElementById('dragg');
-  dropZone.addEventListener('dragover', handleDragOver, false);
-  dropZone.addEventListener('drop', handleFileSelect, false);
 
-  document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
+    function confFunc(configuration) {
+
+
+        var configuration = configuration || {};
+
+        var conf = {
+            fileInput : document.querySelector(filesElement),
+            gallery : document.querySelector(galleryElement)
+        };
+
+        Object.keys(conf).forEach(function(key) {
+            if (configuration[key]) { conf[key] = configuration[key] }
+        });
+        return conf;
+    }
+
+var thumbnails = (function() {
+    function makeCanvas(img, width, height) {
+            var canvas = document.createElement('canvas'),
+                canvasUrl = document.createElement('a'),
+                ctx = canvas.getContext('2d');
+
+            canvas.width = width;
+            canvas.height = height;  
+            canvasUrl.setAttribute("href", img.src);
+            canvasUrl.setAttribute("target", "_blank");
+            canvasUrl.appendChild(canvas);            
+
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, width, height);
+            };
+            return canvasUrl;
+    }
+    return {
+        makeCanvas: makeCanvas
+    }
+})();
+
+var fileUp = (function (filesElement) {
+    var conf = {
+        fileInput : document.querySelector(filesElement),
+
+    };
+    function input() {
+        conf.fileInput.addEventListener('change', handleFile.select, false);
+    }
+    return {
+            input:input()    
+        };
+})('#files');
+
+
+var dragAndDrop = (function(dragElement, galleryElement) {
+    var conf = {
+        dropZone : document.querySelector(dragElement),
+    };
+    
+    function drag() {
+        function handleDragOver(evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+        }
+    // Setup the dnd listeners.
+
+        conf.dropZone.addEventListener('dragover', handleDragOver, false);
+        conf.dropZone.addEventListener('drop', handleFile.select, false);
+    };
+
+    
+    return {
+        drag:drag()
+    };
+})('#drag');
