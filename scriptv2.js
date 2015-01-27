@@ -1,26 +1,17 @@
-var conf = (function (filesElement, dragElement, galleryElement) {
-    var configuration = configuration || {};
-    var config = {
-        fileInput : document.querySelector(filesElement),
-        gallery : document.querySelector(galleryElement),
-        dropZone : document.querySelector(dragElement),
-    }
+var handleFile = (function () {
 
-    Object.keys(config).forEach(function(key) {
-        if (configuration[key]) { config[key] = configuration[key] }
-    });
-
-    return config;
-})('#files', '#drag', '#gallery');
-
-var handleFile = (function (conf) {
-
+    var conf = {};
+    var getConfig = function(partialConfig) {
+        partialConfig.galleryElement = partialConfig.galleryElement || "#gallery";
+  
+        conf.gallery = document.querySelector(partialConfig.galleryElement);
+        return partialConfig;
+    };
 
     function select(evt) {
         evt.stopPropagation();
         evt.preventDefault();
-        var filesHolder;
-        (evt.type == 'drop') ? (filesHolder = evt.dataTransfer.files) : (filesHolder = evt.target.files);
+        var filesHolder = (evt.type == 'drop') ? (filesHolder = evt.dataTransfer.files) : (filesHolder = evt.target.files);
 
         for (var i = 0, file;
             (file = filesHolder[i]); i++) {
@@ -28,13 +19,22 @@ var handleFile = (function (conf) {
 
             // Only process image files.
             if (file.type.match("image.*")) {
+                
 
-                reader.onload = function() {
-                    var img = new Image();
-                    img.src = this.result;
-                    //thumbnails
-                    conf.gallery.appendChild(thumbnails.makeCanvas(img, 150, 150));
+                
+                function pictureAppend(reader) { 
+                    return function () { 
+
+                        var img = new Image();
+
+                            img.src = reader.result; 
+                            //thumbnails 
+                            conf.gallery.appendChild(thumbnails.makeCanvas(img, 150, 150)); 
+                        };
+                        
                 }
+
+                reader.onload = pictureAppend(reader);
 
                 // Read in the image file as a data URL.
                 reader.readAsDataURL(file);
@@ -42,10 +42,11 @@ var handleFile = (function (conf) {
         }
     }
         return {
-            select: select
+            select: select,
+            getConfig:getConfig
         };
 
-})(conf);
+})();
 
 
 var thumbnails = (function() {
@@ -70,18 +71,41 @@ var thumbnails = (function() {
     }
 })();
 
-var fileUp = (function (conf) {
+var fileUp = (function () {
+
+    var conf = {};
+    var getConfig = function(partialConfig) {
+        partialConfig.filesElement = partialConfig.fileElement || "#files";
+  
+        conf.file = document.querySelector(partialConfig.fileElement);
+        return partialConfig;
+    };
 
     function input() {
-        conf.fileInput.addEventListener('change', handleFile.select, false);
+        conf.file.addEventListener('change', handleFile.select, false);
     }
     return {
-            input:input()    
+            input:input,
+            getConfig:getConfig
         };
-})(conf);
+})();
 
 
-var dragAndDrop = (function(dragElement) {
+
+
+var dragAndDrop = (function() {
+
+    var conf = {};
+    var getConfig = function(partialConfig) {
+        partialConfig.dragElement = partialConfig.dragElement || "#drag";
+  
+        conf.drag = document.querySelector(partialConfig.dragElement);
+        return partialConfig;
+    };
+
+
+
+
     
     function drag() {
         function handleDragOver(evt) {
@@ -91,12 +115,31 @@ var dragAndDrop = (function(dragElement) {
         }
     // Setup the dnd listeners.
 
-        conf.dropZone.addEventListener('dragover', handleDragOver, false);
-        conf.dropZone.addEventListener('drop', handleFile.select, false);
+        conf.drag.addEventListener('dragover', handleDragOver, false);
+        conf.drag.addEventListener('drop', handleFile.select, false);
     };
 
     
     return {
-        drag:drag()
+        drag:drag,
+        getConfig:getConfig
     };
-})(conf);
+})();
+
+
+var main = (function() {
+    //configure 
+    fileUp.getConfig({
+        fileElement : '#files'
+    });
+    dragAndDrop.getConfig({
+        dragElement: "#drag"
+    });
+    handleFile.getConfig({
+        galleryElement : '#gallery',        
+    });
+
+    dragAndDrop.drag()
+    fileUp.input();
+
+})();
