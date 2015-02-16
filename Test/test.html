@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Test</title>
+        <link rel="stylesheet" href="mocha.css" />
+    </head>
+    <body>
+
+
+        <div id="mocha"><p><a href=".">Index</a></p></div>
+        <div id="messages"></div>
+        <div id="fixtures"></div>
+        <script src="node_modules/mocha/mocha.js"></script>
+        <script src="node_modules/chai/chai.js"></script>
+        <script src="node_modules/chai-spies/chai-spies.js"></script>
+        <script src="sinon.js"></script>
+        <script src="lib/afterTest.js"></script>
+        <script>mocha.setup('bdd')</script>
+        <script src="test/test.js"></script>
+        <script>mocha.run();</script>
+
+
+        
+    </body>
+</html>
